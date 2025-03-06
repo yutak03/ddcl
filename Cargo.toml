@@ -1,0 +1,27 @@
+[package]
+name = "docker-db-container-login"
+version = "0.0.1"
+authors = ["yutak <yutak03@gmail.com>"]
+edition = "2024"
+description = "Dockerデータベースコンテナに簡単に接続できるCLIツール"
+
+[[bin]]
+name = "dbcli"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5.31", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+anyhow = "1.0"
+thiserror = "2.0.12"
+directories = "6.0.0"
+tokio = { version = "1.35", features = ["full", "process"] }
+log = "0.4"
+env_logger = "0.11.6"
+tempfile = "3.10.1"
+
+# データベースドライバー
+mysql = "26.0.0"
+postgres = { version = "0.19", features = ["with-chrono-0_4"] }
+mongodb = "3.2.1"
