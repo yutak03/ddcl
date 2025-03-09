@@ -26,13 +26,13 @@ cargo install --path .
 
 ```bash
 # PostgreSQL コンテナの設定を追加
-dbcli add postgres-dev --container postgres_container --db-type postgres --user postgres --password secret --database mydb
+dbcli add [alias_name] --container [docker_container_name] --db-type postgres --user postgres --password secret --database [database_name]
 
 # MySQL コンテナの設定を追加
-dbcli add mysql-dev --container mysql_container --db-type mysql --user root --password secret --database mydb
+dbcli add [alias_name] --container [docker_container_name] --db-type mysql --user root --password secret --database [database_name]
 
 # MongoDB コンテナの設定を追加
-dbcli add mongo-dev --container mongo_container --db-type mongodb --user mongo --password secret --database admin
+dbcli add [alias_name] --container [docker_container_name] --db-type mongodb --user mongo --password secret --database [database_name]
 ```
 
 ### 設定一覧を表示
@@ -44,9 +44,9 @@ dbcli list
 出力例:
 ```
 接続設定一覧:
-  postgres-dev: PostgreSQL (postgres@postgres_container, DB: mydb)
-  mysql-dev: MySQL (root@mysql_container, DB: mydb)
-  mongo-dev: MongoDB (mongo@mongo_container, DB: admin)
+  [alias_name]: PostgreSQL (postgres@postgres_container, DB: mydb)
+  [alias_name]: MySQL (root@mysql_container, DB: mydb)
+  [alias_name]: MongoDB (mongo@mongo_container, DB: admin)
 ```
 
 ### エイリアスを使って接続
