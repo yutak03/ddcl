@@ -24,4 +24,4 @@ tempfile = "3.19.0"
 # データベースドライバー
 mysql = "26.0.0"
 postgres = { version = "0.19", features = ["with-chrono-0_4"] }
-mongodb = "3.2.2"
+mongodb = "3.2.3"
