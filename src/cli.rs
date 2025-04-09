@@ -8,7 +8,7 @@ use crate::config::{DatabaseConnection, DatabaseType};
 #[derive(Debug, Parser)]
 #[command(
     name = "dbcli",
-    about = "Docker データベースコンテナに簡単に接続するツール",
+    about = "A tool to easily connect to Docker database containers",
     version
 )]
 pub struct Cli {
@@ -20,19 +20,19 @@ pub struct Cli {
 #[derive(Debug, Subcommand)]
 pub enum Commands {
     /// データベースコンテナに接続
-    #[command(name = "connect", about = "データベースコンテナに接続")]
+    #[command(name = "connect", about = "Connect to a database container")]
     Connect(ConnectArgs),
 
     /// 接続設定を追加
-    #[command(name = "add", about = "接続設定を追加")]
+    #[command(name = "add", about = "Add a connection configuration")]
     Add(AddArgs),
 
     /// 接続設定を削除
-    #[command(name = "remove", about = "接続設定を削除")]
+    #[command(name = "remove", about = "Remove a connection configuration")]
     Remove(RemoveArgs),
 
-    /// 接続設定の一覧を表示
-    #[command(name = "list", about = "接続設定の一覧を表示")]
+    /// Display a list of connection configurations
+    #[command(name = "list", about = "Display a list of connection configurations")]
     List,
 }
 
