@@ -1,6 +1,6 @@
 [package]
 name = "docker-db-container-login"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["yutak <yutak03@gmail.com>"]
 edition = "2024"
 description = "A CLI tool for easily connecting to Docker database containers"
