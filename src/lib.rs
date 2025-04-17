@@ -2,11 +2,13 @@ pub mod cli;
 pub mod config;
 pub mod db;
 pub mod error;
+pub mod interactive;
 
 pub use cli::Cli;
 pub use config::{Config, DatabaseConnection, DatabaseType};
 pub use db::DatabaseConnector;
 pub use error::{AppError, Result};
+pub use interactive::get_connection_interactively;
 
 #[cfg(test)]
 mod tests {
@@ -334,13 +336,14 @@ mod tests {
         #[test]
         fn test_add_args_to_connection() {
             let args = AddArgs {
-                alias: "test-alias".to_string(),
-                container: "test-container".to_string(),
-                db_type: "postgresql".to_string(),
-                user: "testuser".to_string(),
+                alias: Some("test-alias".to_string()),
+                container: Some("test-container".to_string()),
+                db_type: Some("postgresql".to_string()),
+                user: Some("testuser".to_string()),
                 password: Some("pass123".to_string()),
                 database: Some("testdb".to_string()),
                 port: Some(5432),
+                interactive: false,
             };
 
             let conn = args.to_connection().unwrap();
@@ -355,13 +358,14 @@ mod tests {
         #[test]
         fn test_add_args_invalid_db_type() {
             let args = AddArgs {
-                alias: "test-alias".to_string(),
-                container: "test-container".to_string(),
-                db_type: "invalid".to_string(), // 不正なDB種別
-                user: "testuser".to_string(),
+                alias: Some("test-alias".to_string()),
+                container: Some("test-container".to_string()),
+                db_type: Some("invalid".to_string()), // 不正なDB種別
+                user: Some("testuser".to_string()),
                 password: None,
                 database: None,
                 port: None,
+                interactive: false,
             };
 
             assert!(args.to_connection().is_err());

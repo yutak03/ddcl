@@ -1,5 +1,6 @@
 use anyhow::Context;
 use clap::Parser;
+use docker_db_container_login::get_connection_interactively;
 use docker_db_container_login::{
     Config, DatabaseConnector, Result,
     cli::{Commands, ConnectArgs},
@@ -28,16 +29,35 @@ async fn main() -> anyhow::Result<()> {
     match cli.command {
         Commands::Connect(args) => connect_command(args, &config).await?,
         Commands::Add(args) => {
-            let alias = args.alias.clone();
-            let connection = args
-                .to_connection()
-                .map_err(|e| anyhow::anyhow!("接続情報の変換に失敗しました: {}", e))?;
+            if args.interactive {
+                // インタラクティブモードで接続設定を追加
+                let (alias, connection) = get_connection_interactively()
+                    .context("インタラクティブモードでの入力に失敗しました")?;
 
-            config
-                .add_connection(alias.clone(), connection)
-                .context("接続設定の追加に失敗しました")?;
+                config
+                    .add_connection(alias.clone(), connection)
+                    .context("接続設定の追加に失敗しました")?;
 
-            println!("接続設定 '{}' を追加しました", alias);
+                println!("接続設定 '{}' を追加しました", alias);
+            } else {
+                // 従来の方法で接続設定を追加
+                let alias = match &args.alias {
+                    Some(alias) => alias.clone(),
+                    None => {
+                        return Err(anyhow::anyhow!("エイリアス名が指定されていません"));
+                    }
+                };
+
+                let connection = args
+                    .to_connection()
+                    .map_err(|e| anyhow::anyhow!("接続情報の変換に失敗しました: {}", e))?;
+
+                config
+                    .add_connection(alias.clone(), connection)
+                    .context("接続設定の追加に失敗しました")?;
+
+                println!("接続設定 '{}' を追加しました", alias);
+            }
         }
         Commands::Remove(args) => {
             config

@@ -59,11 +59,11 @@ pub struct ConnectArgs {
     pub password: Option<String>,
 
     /// データベース名
-    #[arg(short, long)]
+    #[arg(short = 'n', long)]
     pub database: Option<String>,
 
     /// ポート番号
-    #[arg(short, long)]
+    #[arg(short = 'P', long)]
     pub port: Option<u16>,
 }
 
@@ -93,43 +93,70 @@ impl ConnectArgs {
 #[derive(Debug, Args)]
 pub struct AddArgs {
     /// エイリアス名
-    pub alias: String,
+    #[arg(required = false)]
+    pub alias: Option<String>,
 
     /// コンテナ名
     #[arg(short, long)]
-    pub container: String,
+    pub container: Option<String>,
 
     /// データベースの種類（postgres, mysql, mongodbのいずれか）
     #[arg(short, long)]
-    pub db_type: String,
+    pub db_type: Option<String>,
 
     /// ユーザー名
     #[arg(short, long)]
-    pub user: String,
+    pub user: Option<String>,
 
     /// パスワード
     #[arg(short, long)]
     pub password: Option<String>,
 
     /// データベース名
-    #[arg(short, long)]
+    #[arg(short = 'n', long)]
     pub database: Option<String>,
 
     /// ポート番号
-    #[arg(short, long)]
+    #[arg(short = 'P', long)]
     pub port: Option<u16>,
+
+    /// インタラクティブモードを使用
+    #[arg(short, long)]
+    pub interactive: bool,
 }
 
 impl AddArgs {
     /// 接続情報をDatabaseConnectionに変換
     pub fn to_connection(&self) -> Result<DatabaseConnection, String> {
-        let db_type = DatabaseType::from_str(&self.db_type)
+        // インタラクティブモードの場合はNoneを返す（呼び出し元でユーザー入力を処理）
+        if self.interactive
+            && (self.container.is_none() || self.db_type.is_none() || self.user.is_none())
+        {
+            return Err("インタラクティブモードで必要な情報が不足しています".to_string());
+        }
+
+        let db_type_str = match &self.db_type {
+            Some(db_type) => db_type,
+            None => return Err("データベースタイプが指定されていません".to_string()),
+        };
+
+        let db_type = DatabaseType::from_str(db_type_str)
             .map_err(|e| format!("データベースタイプの解析エラー: {}", e))?;
+
+        let container = match &self.container {
+            Some(container) => container.clone(),
+            None => return Err("コンテナ名が指定されていません".to_string()),
+        };
+
+        let user = match &self.user {
+            Some(user) => user.clone(),
+            None => return Err("ユーザー名が指定されていません".to_string()),
+        };
 
         Ok(DatabaseConnection {
             db_type,
-            container: self.container.clone(),
-            user: self.user.clone(),
+            container,
+            user,
             password: self.password.clone(),
             database: self.database.clone(),
             port: self.port,
