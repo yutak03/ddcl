@@ -93,22 +93,23 @@ impl ConnectArgs {
 #[derive(Debug, Args)]
 pub struct AddArgs {
     /// エイリアス名
+    #[arg(required_unless_present = "interactive")]
     pub alias: String,
 
     /// コンテナ名
-    #[arg(short, long)]
+    #[arg(short, long, required_unless_present = "interactive")]
     pub container: String,
 
     /// データベースの種類（postgres, mysql, mongodbのいずれか）
-    #[arg(short, long)]
+    #[arg(short, long, required_unless_present = "interactive")]
     pub db_type: String,
 
     /// ユーザー名
-    #[arg(short, long)]
+    #[arg(short, long, required_unless_present = "interactive")]
     pub user: String,
 
     /// パスワード
-    #[arg(short, long)]
+    #[arg(short, long, required_unless_present = "interactive")]
     pub password: Option<String>,
 
     /// データベース名
@@ -118,6 +119,10 @@ pub struct AddArgs {
     /// ポート番号
     #[arg(short, long)]
     pub port: Option<u16>,
+
+    /// インタラクティブモードを使用
+    #[arg(short, long)]
+    pub interactive: bool,
 }
 
 impl AddArgs {

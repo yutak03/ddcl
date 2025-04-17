@@ -5,6 +5,7 @@ use docker_db_container_login::{
     cli::{Commands, ConnectArgs},
 };
 use std::process;
+use docker_db_container_login::get_connection_interactively;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -28,16 +29,29 @@ async fn main() -> anyhow::Result<()> {
     match cli.command {
         Commands::Connect(args) => connect_command(args, &config).await?,
         Commands::Add(args) => {
-            let alias = args.alias.clone();
-            let connection = args
-                .to_connection()
-                .map_err(|e| anyhow::anyhow!("接続情報の変換に失敗しました: {}", e))?;
+            if args.interactive {
+                // インタラクティブモードで接続設定を追加
+                let (alias, connection) = get_connection_interactively()
+                    .context("インタラクティブモードでの入力に失敗しました")?;
+                
+                config
+                    .add_connection(alias.clone(), connection)
+                    .context("接続設定の追加に失敗しました")?;
 
-            config
-                .add_connection(alias.clone(), connection)
-                .context("接続設定の追加に失敗しました")?;
+                println!("接続設定 '{}' を追加しました", alias);
+            } else {
+                // 従来の方法で接続設定を追加
+                let alias = args.alias.clone();
+                let connection = args
+                    .to_connection()
+                    .map_err(|e| anyhow::anyhow!("接続情報の変換に失敗しました: {}", e))?;
 
-            println!("接続設定 '{}' を追加しました", alias);
+                config
+                    .add_connection(alias.clone(), connection)
+                    .context("接続設定の追加に失敗しました")?;
+
+                println!("接続設定 '{}' を追加しました", alias);
+            }
         }
         Commands::Remove(args) => {
             config

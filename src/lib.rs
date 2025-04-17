@@ -2,11 +2,13 @@ pub mod cli;
 pub mod config;
 pub mod db;
 pub mod error;
+pub mod interactive;
 
 pub use cli::Cli;
 pub use config::{Config, DatabaseConnection, DatabaseType};
 pub use db::DatabaseConnector;
 pub use error::{AppError, Result};
+pub use interactive::get_connection_interactively;
 
 #[cfg(test)]
 mod tests {
@@ -341,6 +343,7 @@ mod tests {
                 password: Some("pass123".to_string()),
                 database: Some("testdb".to_string()),
                 port: Some(5432),
+                interactive: false,
             };
 
             let conn = args.to_connection().unwrap();
@@ -362,6 +365,7 @@ mod tests {
                 password: None,
                 database: None,
                 port: None,
+                interactive: false,
             };
 
             assert!(args.to_connection().is_err());
