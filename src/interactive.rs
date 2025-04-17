@@ -1,6 +1,6 @@
 use crate::config::{DatabaseConnection, DatabaseType};
 use crate::error::{AppError, Result};
-use dialoguer::{theme::ColorfulTheme, Input, Password, Select};
+use dialoguer::{Input, Password, Select, theme::ColorfulTheme};
 use std::str::FromStr;
 
 // dialoguer::Errorを変換するためのFromトレイト実装を追加
@@ -49,14 +49,22 @@ pub fn get_connection_interactively() -> Result<(String, DatabaseConnection)> {
         .with_prompt("Password (Optional)")
         .allow_empty_password(true)
         .interact()?;
-    let password = if password.is_empty() { None } else { Some(password) };
+    let password = if password.is_empty() {
+        None
+    } else {
+        Some(password)
+    };
 
     // データベース名の入力（オプション）
     let database: String = Input::with_theme(&theme)
         .with_prompt("Database name(Optional)")
         .allow_empty(true)
         .interact()?;
-    let database = if database.is_empty() { None } else { Some(database) };
+    let database = if database.is_empty() {
+        None
+    } else {
+        Some(database)
+    };
 
     // ポート番号の入力（オプション）
     let port_str: String = Input::with_theme(&theme)

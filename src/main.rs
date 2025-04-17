@@ -1,11 +1,11 @@
 use anyhow::Context;
 use clap::Parser;
+use docker_db_container_login::get_connection_interactively;
 use docker_db_container_login::{
     Config, DatabaseConnector, Result,
     cli::{Commands, ConnectArgs},
 };
 use std::process;
-use docker_db_container_login::get_connection_interactively;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
                 // インタラクティブモードで接続設定を追加
                 let (alias, connection) = get_connection_interactively()
                     .context("インタラクティブモードでの入力に失敗しました")?;
-                
+
                 config
                     .add_connection(alias.clone(), connection)
                     .context("接続設定の追加に失敗しました")?;
