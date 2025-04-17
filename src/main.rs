@@ -41,7 +41,13 @@ async fn main() -> anyhow::Result<()> {
                 println!("接続設定 '{}' を追加しました", alias);
             } else {
                 // 従来の方法で接続設定を追加
-                let alias = args.alias.clone();
+                let alias = match &args.alias {
+                    Some(alias) => alias.clone(),
+                    None => {
+                        return Err(anyhow::anyhow!("エイリアス名が指定されていません").into());
+                    }
+                };
+
                 let connection = args
                     .to_connection()
                     .map_err(|e| anyhow::anyhow!("接続情報の変換に失敗しました: {}", e))?;
