@@ -44,7 +44,7 @@ async fn main() -> anyhow::Result<()> {
                 let alias = match &args.alias {
                     Some(alias) => alias.clone(),
                     None => {
-                        return Err(anyhow::anyhow!("エイリアス名が指定されていません").into());
+                        return Err(anyhow::anyhow!("エイリアス名が指定されていません"));
                     }
                 };
 
