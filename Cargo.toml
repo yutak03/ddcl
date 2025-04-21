@@ -1,6 +1,6 @@
 [package]
 name = "docker-db-container-login"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["yutak <yutak03@gmail.com>"]
 edition = "2024"
 description = "A CLI tool for easily connecting to Docker database containers"
@@ -10,7 +10,7 @@ name = "dbcli"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "4.5.36", features = ["derive"] }
+clap = { version = "4.5.37", features = ["derive"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 anyhow = "1.0"
