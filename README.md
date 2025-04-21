@@ -123,6 +123,7 @@ MIT
 
 ## 参考
 
-以下のテンプレートから作成しました。
+以下のテンプレートから作成しました。  
+CIの整備が整っていて使いやすいです。ありがとうございます。
 
 - [rust-cli-template - skanehira](https://github.com/skanehira/rust-cli-template)
