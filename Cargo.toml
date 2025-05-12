@@ -1,6 +1,6 @@
 [package]
 name = "docker-db-container-login"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["yutak <yutak03@gmail.com>"]
 edition = "2024"
 description = "A CLI tool for easily connecting to Docker database containers"
@@ -20,9 +20,9 @@ tokio = { version = "1.45", features = ["full", "process"] }
 log = "0.4"
 env_logger = "0.11.8"
 tempfile = "3.20.0"
+dialoguer = "0.11.0"
 
-# データベースドライバー
+# Database drivers
 mysql = "26.0.0"
 postgres = { version = "0.19", features = ["with-chrono-0_4"] }
 mongodb = "3.2.3"
-dialoguer = "0.11.0"
