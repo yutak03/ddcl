@@ -6,9 +6,9 @@ pub mod interactive;
 
 pub use cli::Cli;
 pub use config::{Config, DatabaseConnection, DatabaseType};
-pub use db::DatabaseConnector;
+pub use db::{DatabaseConnector, DetectedContainer};
 pub use error::{AppError, Result};
-pub use interactive::get_connection_interactively;
+pub use interactive::{get_connection_interactively, get_connection_with_auto_detect};
 
 #[cfg(test)]
 mod tests {
@@ -265,16 +265,16 @@ mod tests {
 
         #[test]
         fn test_error_display() {
-            let err = AppError::Config("テストエラー".to_string());
-            assert_eq!(err.to_string(), "設定エラー: テストエラー");
+            let err = AppError::Config("Test error".to_string());
+            assert_eq!(err.to_string(), "Config error: Test error");
 
-            let err = AppError::DatabaseConnection("接続失敗".to_string());
-            assert_eq!(err.to_string(), "データベース接続エラー: 接続失敗");
+            let err = AppError::DatabaseConnection("Connection failed".to_string());
+            assert_eq!(err.to_string(), "Database connection error: Connection failed");
 
             let err = AppError::AliasNotFound("test-alias".to_string());
             assert_eq!(
                 err.to_string(),
-                "エイリアス 'test-alias' が見つかりませんでした"
+                "Alias 'test-alias' not found"
             );
         }
     }
@@ -344,6 +344,7 @@ mod tests {
                 database: Some("testdb".to_string()),
                 port: Some(5432),
                 interactive: false,
+                auto_detect: false,
             };
 
             let conn = args.to_connection().unwrap();
@@ -360,12 +361,13 @@ mod tests {
             let args = AddArgs {
                 alias: Some("test-alias".to_string()),
                 container: Some("test-container".to_string()),
-                db_type: Some("invalid".to_string()), // 不正なDB種別
+                db_type: Some("invalid".to_string()), // Invalid DB type
                 user: Some("testuser".to_string()),
                 password: None,
                 database: None,
                 port: None,
                 interactive: false,
+                auto_detect: false,
             };
 
             assert!(args.to_connection().is_err());

@@ -1,40 +1,40 @@
 use thiserror::Error;
 
-/// アプリケーションのエラー型
+/// Application error types
 #[derive(Debug, Error)]
 pub enum AppError {
-    /// 設定ファイルに関連するエラー
-    #[error("設定エラー: {0}")]
+    /// Config file related errors
+    #[error("Config error: {0}")]
     Config(String),
 
-    /// データベース接続に関連するエラー
-    #[error("データベース接続エラー: {0}")]
+    /// Database connection related errors
+    #[error("Database connection error: {0}")]
     DatabaseConnection(String),
 
-    /// Dockerコンテナに関連するエラー
-    #[error("Dockerエラー: {0}")]
+    /// Docker container related errors
+    #[error("Docker error: {0}")]
     Docker(String),
 
-    /// 不明なデータベースタイプに関連するエラー
-    #[error("不明なデータベースタイプ: {0}")]
+    /// Unknown database type errors
+    #[error("Unknown database type: {0}")]
     UnknownDatabaseType(String),
 
-    /// エイリアスが見つからないエラー
-    #[error("エイリアス '{0}' が見つかりませんでした")]
+    /// Alias not found errors
+    #[error("Alias '{0}' not found")]
     AliasNotFound(String),
 
-    /// I/O エラー
-    #[error("I/O エラー: {0}")]
+    /// I/O errors
+    #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),
 
-    /// YAMLシリアライズ/デシリアライズエラー
-    #[error("YAMLエラー: {0}")]
+    /// YAML serialization/deserialization errors
+    #[error("YAML error: {0}")]
     Yaml(#[from] serde_yaml::Error),
 
-    /// その他のエラー
-    #[error("エラー: {0}")]
+    /// Other errors
+    #[error("Error: {0}")]
     Other(String),
 }
 
-/// 結果型のエイリアス
+/// Result type alias
 pub type Result<T> = std::result::Result<T, AppError>;

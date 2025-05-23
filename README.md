@@ -11,6 +11,8 @@ Docker で実行されているデータベースコンテナに簡単に接続�
 - エイリアスで簡単に接続できる機能
 - コマンドライン引数での直接接続
 - 設定ファイルに接続情報を保存
+- 実行中のデータベースコンテナの自動検出
+- コンテナの環境変数から接続情報を自動取得
 
 ## インストール
 
@@ -23,6 +25,26 @@ cargo install --path .
 ## 使い方
 
 ### 接続設定を追加
+
+#### 自動検出モード（推奨）
+
+実行中のデータベースコンテナを自動的に検出し、環境変数から接続情報を取得します：
+
+```bash
+# 自動検出モードで接続設定を追加
+dbcli add --auto-detect
+```
+
+#### インタラクティブモード
+
+手動でコンテナを選択または入力します：
+
+```bash
+# インタラクティブモードで接続設定を追加
+dbcli add --interactive
+```
+
+#### コマンドライン引数での直接指定
 
 ```bash
 # PostgreSQL コンテナの設定を追加
@@ -44,9 +66,9 @@ dbcli list
 出力例:
 ```
 接続設定一覧:
-  [alias_name]: PostgreSQL (postgres@postgres_container, DB: mydb)
-  [alias_name]: MySQL (root@mysql_container, DB: mydb)
-  [alias_name]: MongoDB (mongo@mongo_container, DB: admin)
+  [alias_name]: PostgreSQL (postgres@postgres_container, DB: mydb) [実行中]
+  [alias_name]: MySQL (root@mysql_container, DB: mydb) [停止中]
+  [alias_name]: MongoDB (mongo@mongo_container, DB: admin) [実行中]
 ```
 
 ### エイリアスを使って接続

@@ -1,6 +1,6 @@
 use anyhow::Context;
 use clap::Parser;
-use docker_db_container_login::get_connection_interactively;
+use docker_db_container_login::{get_connection_interactively, get_connection_with_auto_detect};
 use docker_db_container_login::{
     Config, DatabaseConnector, Result,
     cli::{Commands, ConnectArgs},
@@ -16,73 +16,82 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // ロガーを初期化
     env_logger::init();
 
-    // CLIを解析
     let cli = docker_db_container_login::Cli::parse();
 
-    // 設定をロード
-    let mut config = Config::load().context("設定のロードに失敗しました")?;
-
-    // サブコマンドを実行
+    let mut config = Config::load().context("Failed to load config")?;
     match cli.command {
         Commands::Connect(args) => connect_command(args, &config).await?,
         Commands::Add(args) => {
-            if args.interactive {
-                // インタラクティブモードで接続設定を追加
-                let (alias, connection) = get_connection_interactively()
-                    .context("インタラクティブモードでの入力に失敗しました")?;
+            if args.auto_detect {
+                let (alias, connection) = get_connection_with_auto_detect().await
+                    .context("Failed in auto-detect mode input")?;
 
                 config
                     .add_connection(alias.clone(), connection)
-                    .context("接続設定の追加に失敗しました")?;
+                    .context("Failed to add connection config")?;
 
-                println!("接続設定 '{}' を追加しました", alias);
+                println!("Connection config '{}' added", alias);
+            } else if args.interactive {
+                let (alias, connection) = get_connection_interactively().await
+                    .context("Failed in interactive mode input")?;
+
+                config
+                    .add_connection(alias.clone(), connection)
+                    .context("Failed to add connection config")?;
+
+                println!("Connection config '{}' added", alias);
             } else {
-                // 従来の方法で接続設定を追加
                 let alias = match &args.alias {
                     Some(alias) => alias.clone(),
                     None => {
-                        return Err(anyhow::anyhow!("エイリアス名が指定されていません"));
+                        return Err(anyhow::anyhow!("Alias name not specified"));
                     }
                 };
 
                 let connection = args
                     .to_connection()
-                    .map_err(|e| anyhow::anyhow!("接続情報の変換に失敗しました: {}", e))?;
+                    .map_err(|e| anyhow::anyhow!("Failed to convert connection info: {}", e))?;
 
                 config
                     .add_connection(alias.clone(), connection)
-                    .context("接続設定の追加に失敗しました")?;
+                    .context("Failed to add connection config")?;
 
-                println!("接続設定 '{}' を追加しました", alias);
+                println!("Connection config '{}' added", alias);
             }
         }
         Commands::Remove(args) => {
             config
                 .remove_connection(&args.alias)
-                .context("接続設定の削除に失敗しました")?;
+                .context("Failed to remove connection config")?;
 
-            println!("接続設定 '{}' を削除しました", args.alias);
+            println!("Connection config '{}' removed", args.alias);
         }
         Commands::List => {
             let connections = config.list_connections();
 
             if connections.is_empty() {
-                println!("保存された接続設定はありません");
+                println!("No saved connections");
                 return Ok(());
             }
 
-            println!("接続設定一覧:");
+            println!("Connection list:");
             for (alias, conn) in connections {
+                let status = if DatabaseConnector::check_container(&conn.container).await? {
+                    "Running"
+                } else {
+                    "Stopped"
+                };
+
                 println!(
-                    "  {}: {} ({}@{}, DB: {})",
+                    "  {}: {} ({}@{}, DB: {}) [{}]",
                     alias,
                     conn.db_type,
                     conn.user,
                     conn.container,
-                    conn.database.as_deref().unwrap_or("-")
+                    conn.database.as_deref().unwrap_or("-"),
+                    status
                 );
             }
         }
@@ -91,34 +100,28 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// 接続コマンドを処理
 async fn connect_command(args: ConnectArgs, config: &Config) -> Result<()> {
-    // 接続情報を取得
     let connection = if let Some(alias) = args.alias {
-        // エイリアスから取得
         config.get_connection(&alias)?.clone()
     } else if let Some(connection) = args.to_connection() {
-        // コマンドライン引数から作成
         connection
     } else {
         eprintln!(
-            "エラー: エイリアスまたは必要なパラメータ（コンテナ名、DB種類、ユーザー名）を指定してください"
+            "Error: Please specify an alias or required parameters (container name, DB type, username)"
         );
         process::exit(1);
     };
 
-    // コンテナが実行中かチェック
     if !DatabaseConnector::check_container(&connection.container).await? {
         eprintln!(
-            "エラー: コンテナ '{}' は実行されていません",
+            "Error: Container '{}' is not running",
             connection.container
         );
         process::exit(1);
     }
 
-    // データベースに接続
     println!(
-        "{}コンテナ '{}' に接続しています...",
+        "Connecting to {} container '{}'...",
         connection.db_type, connection.container
     );
     DatabaseConnector::connect(&connection).await?;

@@ -7,14 +7,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, Result};
 
-/// データベースの種類
+/// Database types
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum DatabaseType {
-    /// PostgreSQLデータベース
+    /// PostgreSQL database
     PostgreSQL,
-    /// MySQLデータベース
+    /// MySQL database
     MySQL,
-    /// MongoDBデータベース
+    /// MongoDB database
     MongoDB,
 }
 
@@ -41,31 +41,31 @@ impl std::str::FromStr for DatabaseType {
     }
 }
 
-/// データベース接続情報
+/// Database connection information
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DatabaseConnection {
-    /// データベースの種類
+    /// Database type
     pub db_type: DatabaseType,
-    /// コンテナ名
+    /// Container name
     pub container: String,
-    /// ユーザー名
+    /// Username
     pub user: String,
-    /// パスワード
+    /// Password
     pub password: Option<String>,
-    /// データベース名
+    /// Database name
     pub database: Option<String>,
-    /// ポート番号
+    /// Port number
     pub port: Option<u16>,
-    /// 追加オプション
+    /// Additional options
     pub options: Option<HashMap<String, String>>,
 }
 
-/// アプリケーション設定
+/// Application configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    /// バージョン
+    /// Version
     pub version: String,
-    /// データベース接続エイリアス
+    /// Database connection aliases
     pub connections: HashMap<String, DatabaseConnection>,
 }
 
@@ -79,25 +79,25 @@ impl Default for Config {
 }
 
 impl Config {
-    /// 新しい設定オブジェクトを作成
+    /// Create new configuration object
     pub fn new() -> Self {
         Default::default()
     }
 
-    /// 設定ファイルのパスを取得
+    /// Get configuration file path
     pub fn get_config_path() -> Result<PathBuf> {
         let proj_dirs = ProjectDirs::from("", "", "docker_db_container_login")
-            .ok_or_else(|| AppError::Config("設定ディレクトリの取得に失敗しました".to_string()))?;
+            .ok_or_else(|| AppError::Config("Failed to get config directory".to_string()))?;
 
         let config_dir = proj_dirs.config_dir();
         fs::create_dir_all(config_dir).map_err(|e| {
-            AppError::Config(format!("設定ディレクトリの作成に失敗しました: {}", e))
+            AppError::Config(format!("Failed to create config directory: {}", e))
         })?;
 
         Ok(config_dir.join("config.yaml"))
     }
 
-    /// 設定ファイルから読み込み
+    /// Load from configuration file
     pub fn load() -> Result<Self> {
         let config_path = Self::get_config_path()?;
 
@@ -112,7 +112,7 @@ impl Config {
         Ok(config)
     }
 
-    /// 設定をファイルに保存
+    /// Save configuration to file
     pub fn save(&self) -> Result<()> {
         let config_path = Self::get_config_path()?;
         let config_str = serde_yaml::to_string(self)?;
@@ -120,14 +120,14 @@ impl Config {
         Ok(())
     }
 
-    /// 接続情報を追加
+    /// Add connection information
     pub fn add_connection(&mut self, name: String, connection: DatabaseConnection) -> Result<()> {
         self.connections.insert(name, connection);
         self.save()?;
         Ok(())
     }
 
-    /// 接続情報を削除
+    /// Remove connection information
     pub fn remove_connection(&mut self, name: &str) -> Result<()> {
         if self.connections.remove(name).is_none() {
             return Err(AppError::AliasNotFound(name.to_string()));
@@ -136,14 +136,14 @@ impl Config {
         Ok(())
     }
 
-    /// エイリアスから接続情報を取得
+    /// Get connection information from alias
     pub fn get_connection(&self, name: &str) -> Result<&DatabaseConnection> {
         self.connections
             .get(name)
             .ok_or_else(|| AppError::AliasNotFound(name.to_string()))
     }
 
-    /// 接続情報の一覧を取得
+    /// Get list of connections
     pub fn list_connections(&self) -> Vec<(&String, &DatabaseConnection)> {
         self.connections.iter().collect()
     }
