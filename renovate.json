@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "group:allNonMajor"],
+  "enabledManagers": ["cargo"],
+  "timezone": "Asia/Tokyo",
+  "schedule": ["before 9:00am on Monday"],
+  "baseBranches": ["main"],
+  "pruneStaleBranches": false,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["major-update"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["cargo"],
+      "assignees": ["PROJECT_MAINTAINER_USERNAME"]
+    }
+  ],
+  "rangeStrategy": "pin",
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 2,
+  "separateMajorMinor": true,
+  "separateMinorPatch": false,
+  "commitMessagePrefix": "chore(deps):",
+  "prCreation": "not-pending",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "依存関係更新ダッシュボード"
+}
