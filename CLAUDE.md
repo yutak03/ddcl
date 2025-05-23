@@ -1,0 +1,1 @@
+.cursor/rules/rust_project_rules.md
