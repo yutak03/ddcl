@@ -31,6 +31,10 @@ pub enum AppError {
     #[error("YAML error: {0}")]
     Yaml(#[from] serde_yaml::Error),
 
+    /// Validation errors
+    #[error("Validation error: {0}")]
+    ValidationError(String),
+
     /// Other errors
     #[error("Error: {0}")]
     Other(String),

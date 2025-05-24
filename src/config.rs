@@ -117,6 +117,16 @@ impl Config {
         let config_path = Self::get_config_path()?;
         let config_str = serde_yaml::to_string(self)?;
         fs::write(&config_path, config_str)?;
+        
+        // Set file permissions to 600 (owner read/write only) on Unix systems
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let mut perms = fs::metadata(&config_path)?.permissions();
+            perms.set_mode(0o600);
+            fs::set_permissions(&config_path, perms)?;
+        }
+        
         Ok(())
     }
 

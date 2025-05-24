@@ -5,6 +5,7 @@ use tokio::process::Command;
 
 use crate::config::{DatabaseConnection, DatabaseType};
 use crate::error::{AppError, Result};
+use crate::validation::{validate_container_name, validate_username, validate_database_name};
 
 /// Database connection abstraction
 pub struct DatabaseConnector;
@@ -31,6 +32,13 @@ impl DatabaseConnector {
 
     /// Connect to PostgreSQL
     async fn connect_postgresql(connection: &DatabaseConnection) -> Result<()> {
+        // Validate inputs
+        validate_container_name(&connection.container)?;
+        validate_username(&connection.user)?;
+        if let Some(db) = &connection.database {
+            validate_database_name(db)?;
+        }
+
         let mut cmd = Command::new("docker");
         cmd.arg("exec")
             .arg("-it")
@@ -70,6 +78,13 @@ impl DatabaseConnector {
 
     /// Connect to MySQL
     async fn connect_mysql(connection: &DatabaseConnection) -> Result<()> {
+        // Validate inputs
+        validate_container_name(&connection.container)?;
+        validate_username(&connection.user)?;
+        if let Some(db) = &connection.database {
+            validate_database_name(db)?;
+        }
+
         let mut cmd = Command::new("docker");
         cmd.arg("exec")
             .arg("-it")
@@ -84,9 +99,9 @@ impl DatabaseConnector {
         // Add username
         cmd.arg("-u").arg(&connection.user);
 
-        // Add password (if specified)
+        // Add password (if specified) - use environment variable instead of command line
         if let Some(password) = &connection.password {
-            cmd.arg(format!("-p{}", password));
+            cmd.env("MYSQL_PWD", password);
         }
 
         // Add additional options if available
@@ -114,6 +129,15 @@ impl DatabaseConnector {
 
     /// Connect to MongoDB
     async fn connect_mongodb(connection: &DatabaseConnection) -> Result<()> {
+        // Validate inputs
+        validate_container_name(&connection.container)?;
+        if !connection.user.is_empty() {
+            validate_username(&connection.user)?;
+        }
+        if let Some(db) = &connection.database {
+            validate_database_name(db)?;
+        }
+
         let mut cmd = Command::new("docker");
         cmd.arg("exec")
             .arg("-it")
@@ -122,11 +146,6 @@ impl DatabaseConnector {
 
         // Add authentication credentials (if specified)
         if !connection.user.is_empty() {
-            let _auth_string = if let Some(password) = &connection.password {
-                format!("{}:{}", connection.user, password)
-            } else {
-                connection.user.clone()
-            };
             cmd.arg("-u").arg(&connection.user);
 
             if let Some(password) = &connection.password {
@@ -164,6 +183,9 @@ impl DatabaseConnector {
 
     /// Check if container is running
     pub async fn check_container(container_name: &str) -> Result<bool> {
+        // Validate container name
+        validate_container_name(container_name)?;
+
         let output = Command::new("docker")
             .arg("ps")
             .arg("--format")
@@ -256,6 +278,9 @@ impl DatabaseConnector {
 
     /// Get environment variables from container and infer default connection info
     pub async fn get_container_default_connection(container_name: &str, db_type: &DatabaseType) -> Result<HashMap<String, String>> {
+        // Validate container name
+        validate_container_name(container_name)?;
+
         let output = Command::new("docker")
             .arg("exec")
             .arg(container_name)
@@ -270,9 +295,20 @@ impl DatabaseConnector {
         let mut env_vars = HashMap::new();
         let output_str = String::from_utf8_lossy(&output.stdout);
 
+        // Define allowed environment variables for security
+        const ALLOWED_ENV_VARS: &[&str] = &[
+            "POSTGRES_USER", "POSTGRESQL_USER", "POSTGRES_DB", "POSTGRESQL_DATABASE",
+            "POSTGRES_PASSWORD", "POSTGRESQL_PASSWORD",
+            "MYSQL_DATABASE", "MYSQL_ROOT_PASSWORD", "MYSQL_USER", "MYSQL_PASSWORD",
+            "MONGO_INITDB_ROOT_USERNAME", "MONGO_INITDB_DATABASE", "MONGO_INITDB_ROOT_PASSWORD"
+        ];
+
         for line in output_str.lines() {
             if let Some((key, value)) = line.split_once('=') {
-                env_vars.insert(key.to_string(), value.to_string());
+                // Only store allowed environment variables
+                if ALLOWED_ENV_VARS.contains(&key) {
+                    env_vars.insert(key.to_string(), value.to_string());
+                }
             }
         }
 

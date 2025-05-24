@@ -3,6 +3,7 @@ pub mod config;
 pub mod db;
 pub mod error;
 pub mod interactive;
+pub mod validation;
 
 pub use cli::Cli;
 pub use config::{Config, DatabaseConnection, DatabaseType};

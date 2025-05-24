@@ -583,7 +583,7 @@ dependencies = [
 
 [[package]]
 name = "docker-db-container-login"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -594,8 +594,10 @@ dependencies = [
  "mongodb",
  "mysql",
  "postgres",
+ "regex",
  "serde",
  "serde_yaml",
+ "shell-escape",
  "tempfile",
  "thiserror 2.0.12",
  "tokio",
@@ -2126,6 +2128,12 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
+
+[[package]]
+name = "shell-escape"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "45bb67a18fa91266cc7807181f62f9178a6873bfad7dc788c42e6430db40184f"
 
 [[package]]
 name = "shell-words"
