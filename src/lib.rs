@@ -270,13 +270,13 @@ mod tests {
             assert_eq!(err.to_string(), "Config error: Test error");
 
             let err = AppError::DatabaseConnection("Connection failed".to_string());
-            assert_eq!(err.to_string(), "Database connection error: Connection failed");
-
-            let err = AppError::AliasNotFound("test-alias".to_string());
             assert_eq!(
                 err.to_string(),
-                "Alias 'test-alias' not found"
+                "Database connection error: Connection failed"
             );
+
+            let err = AppError::AliasNotFound("test-alias".to_string());
+            assert_eq!(err.to_string(), "Alias 'test-alias' not found");
         }
     }
 
