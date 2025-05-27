@@ -1,11 +1,11 @@
-use std::process::Stdio;
 use std::collections::HashMap;
+use std::process::Stdio;
 
 use tokio::process::Command;
 
 use crate::config::{DatabaseConnection, DatabaseType};
 use crate::error::{AppError, Result};
-use crate::validation::{validate_container_name, validate_username, validate_database_name};
+use crate::validation::{validate_container_name, validate_database_name, validate_username};
 
 /// Database connection abstraction
 pub struct DatabaseConnector;
@@ -99,9 +99,10 @@ impl DatabaseConnector {
         // Add username
         cmd.arg("-u").arg(&connection.user);
 
-        // Add password (if specified) - use environment variable instead of command line
+        // Add password (if specified)
         if let Some(password) = &connection.password {
-            cmd.env("MYSQL_PWD", password);
+            // Use -p flag with password directly (no space between -p and password)
+            cmd.arg(format!("-p{}", password));
         }
 
         // Add additional options if available
@@ -226,7 +227,8 @@ impl DatabaseConnector {
             if parts.len() >= 4 {
                 let name = parts[0].to_string();
                 let image = parts[1].to_string();
-                let ports: Vec<String> = parts[2].split(',').map(|s| s.trim().to_string()).collect();
+                let ports: Vec<String> =
+                    parts[2].split(',').map(|s| s.trim().to_string()).collect();
                 let status = parts[3].to_string();
 
                 // Determine database type from image name
@@ -277,7 +279,10 @@ impl DatabaseConnector {
     }
 
     /// Get environment variables from container and infer default connection info
-    pub async fn get_container_default_connection(container_name: &str, db_type: &DatabaseType) -> Result<HashMap<String, String>> {
+    pub async fn get_container_default_connection(
+        container_name: &str,
+        db_type: &DatabaseType,
+    ) -> Result<HashMap<String, String>> {
         // Validate container name
         validate_container_name(container_name)?;
 
@@ -297,10 +302,19 @@ impl DatabaseConnector {
 
         // Define allowed environment variables for security
         const ALLOWED_ENV_VARS: &[&str] = &[
-            "POSTGRES_USER", "POSTGRESQL_USER", "POSTGRES_DB", "POSTGRESQL_DATABASE",
-            "POSTGRES_PASSWORD", "POSTGRESQL_PASSWORD",
-            "MYSQL_DATABASE", "MYSQL_ROOT_PASSWORD", "MYSQL_USER", "MYSQL_PASSWORD",
-            "MONGO_INITDB_ROOT_USERNAME", "MONGO_INITDB_DATABASE", "MONGO_INITDB_ROOT_PASSWORD"
+            "POSTGRES_USER",
+            "POSTGRESQL_USER",
+            "POSTGRES_DB",
+            "POSTGRESQL_DATABASE",
+            "POSTGRES_PASSWORD",
+            "POSTGRESQL_PASSWORD",
+            "MYSQL_DATABASE",
+            "MYSQL_ROOT_PASSWORD",
+            "MYSQL_USER",
+            "MYSQL_PASSWORD",
+            "MONGO_INITDB_ROOT_USERNAME",
+            "MONGO_INITDB_DATABASE",
+            "MONGO_INITDB_ROOT_PASSWORD",
         ];
 
         for line in output_str.lines() {
@@ -316,20 +330,26 @@ impl DatabaseConnector {
 
         match db_type {
             DatabaseType::PostgreSQL => {
-                defaults.insert("user".to_string(), 
-                    env_vars.get("POSTGRES_USER")
+                defaults.insert(
+                    "user".to_string(),
+                    env_vars
+                        .get("POSTGRES_USER")
                         .or(env_vars.get("POSTGRESQL_USER"))
                         .unwrap_or(&"postgres".to_string())
-                        .clone()
+                        .clone(),
                 );
-                defaults.insert("database".to_string(),
-                    env_vars.get("POSTGRES_DB")
+                defaults.insert(
+                    "database".to_string(),
+                    env_vars
+                        .get("POSTGRES_DB")
                         .or(env_vars.get("POSTGRESQL_DATABASE"))
                         .unwrap_or(&"postgres".to_string())
-                        .clone()
+                        .clone(),
                 );
-                if let Some(password) = env_vars.get("POSTGRES_PASSWORD")
-                    .or(env_vars.get("POSTGRESQL_PASSWORD")) {
+                if let Some(password) = env_vars
+                    .get("POSTGRES_PASSWORD")
+                    .or(env_vars.get("POSTGRESQL_PASSWORD"))
+                {
                     defaults.insert("password".to_string(), password.clone());
                 }
             }
@@ -343,15 +363,19 @@ impl DatabaseConnector {
                 }
             }
             DatabaseType::MongoDB => {
-                defaults.insert("user".to_string(),
-                    env_vars.get("MONGO_INITDB_ROOT_USERNAME")
+                defaults.insert(
+                    "user".to_string(),
+                    env_vars
+                        .get("MONGO_INITDB_ROOT_USERNAME")
                         .unwrap_or(&"root".to_string())
-                        .clone()
+                        .clone(),
                 );
-                defaults.insert("database".to_string(),
-                    env_vars.get("MONGO_INITDB_DATABASE")
+                defaults.insert(
+                    "database".to_string(),
+                    env_vars
+                        .get("MONGO_INITDB_DATABASE")
                         .unwrap_or(&"admin".to_string())
-                        .clone()
+                        .clone(),
                 );
                 if let Some(password) = env_vars.get("MONGO_INITDB_ROOT_PASSWORD") {
                     defaults.insert("password".to_string(), password.clone());

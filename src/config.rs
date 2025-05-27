@@ -90,9 +90,8 @@ impl Config {
             .ok_or_else(|| AppError::Config("Failed to get config directory".to_string()))?;
 
         let config_dir = proj_dirs.config_dir();
-        fs::create_dir_all(config_dir).map_err(|e| {
-            AppError::Config(format!("Failed to create config directory: {}", e))
-        })?;
+        fs::create_dir_all(config_dir)
+            .map_err(|e| AppError::Config(format!("Failed to create config directory: {}", e)))?;
 
         Ok(config_dir.join("config.yaml"))
     }
@@ -117,7 +116,7 @@ impl Config {
         let config_path = Self::get_config_path()?;
         let config_str = serde_yaml::to_string(self)?;
         fs::write(&config_path, config_str)?;
-        
+
         // Set file permissions to 600 (owner read/write only) on Unix systems
         #[cfg(unix)]
         {
@@ -126,7 +125,7 @@ impl Config {
             perms.set_mode(0o600);
             fs::set_permissions(&config_path, perms)?;
         }
-        
+
         Ok(())
     }
 

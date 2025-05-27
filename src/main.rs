@@ -1,10 +1,10 @@
 use anyhow::Context;
 use clap::Parser;
-use docker_db_container_login::{get_connection_interactively, get_connection_with_auto_detect};
 use docker_db_container_login::{
     Config, DatabaseConnector, Result,
     cli::{Commands, ConnectArgs},
 };
+use docker_db_container_login::{get_connection_interactively, get_connection_with_auto_detect};
 use std::process;
 
 #[derive(Parser, Debug)]
@@ -25,7 +25,8 @@ async fn main() -> anyhow::Result<()> {
         Commands::Connect(args) => connect_command(args, &config).await?,
         Commands::Add(args) => {
             if args.auto_detect {
-                let (alias, connection) = get_connection_with_auto_detect().await
+                let (alias, connection) = get_connection_with_auto_detect()
+                    .await
                     .context("Failed in auto-detect mode input")?;
 
                 config
@@ -34,7 +35,8 @@ async fn main() -> anyhow::Result<()> {
 
                 println!("Connection config '{}' added", alias);
             } else if args.interactive {
-                let (alias, connection) = get_connection_interactively().await
+                let (alias, connection) = get_connection_interactively()
+                    .await
                     .context("Failed in interactive mode input")?;
 
                 config
@@ -113,10 +115,7 @@ async fn connect_command(args: ConnectArgs, config: &Config) -> Result<()> {
     };
 
     if !DatabaseConnector::check_container(&connection.container).await? {
-        eprintln!(
-            "Error: Container '{}' is not running",
-            connection.container
-        );
+        eprintln!("Error: Container '{}' is not running", connection.container);
         process::exit(1);
     }
 

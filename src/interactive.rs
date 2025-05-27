@@ -175,16 +175,22 @@ pub async fn get_connection_with_auto_detect() -> Result<(String, DatabaseConnec
         .interact()?;
 
     // Get default connection information
-    let defaults = DatabaseConnector::get_container_default_connection(&selected_container.name, &selected_container.db_type).await?;
+    let defaults = DatabaseConnector::get_container_default_connection(
+        &selected_container.name,
+        &selected_container.db_type,
+    )
+    .await?;
 
     // Input username
-    let default_user = defaults.get("user").cloned().unwrap_or_else(|| {
-        match selected_container.db_type {
-            DatabaseType::PostgreSQL => "postgres".to_string(),
-            DatabaseType::MySQL => "root".to_string(),
-            DatabaseType::MongoDB => "mongo".to_string(),
-        }
-    });
+    let default_user =
+        defaults
+            .get("user")
+            .cloned()
+            .unwrap_or_else(|| match selected_container.db_type {
+                DatabaseType::PostgreSQL => "postgres".to_string(),
+                DatabaseType::MySQL => "root".to_string(),
+                DatabaseType::MongoDB => "mongo".to_string(),
+            });
     let user: String = Input::with_theme(&theme)
         .with_prompt("DB username")
         .default(default_user)
@@ -206,14 +212,22 @@ pub async fn get_connection_with_auto_detect() -> Result<(String, DatabaseConnec
                 .with_prompt("Password")
                 .allow_empty_password(true)
                 .interact()?;
-            if password.is_empty() { None } else { Some(password) }
+            if password.is_empty() {
+                None
+            } else {
+                Some(password)
+            }
         }
     } else {
         let password: String = Password::with_theme(&theme)
             .with_prompt("Password (Optional)")
             .allow_empty_password(true)
             .interact()?;
-        if password.is_empty() { None } else { Some(password) }
+        if password.is_empty() {
+            None
+        } else {
+            Some(password)
+        }
     };
 
     // Input database name
@@ -223,7 +237,11 @@ pub async fn get_connection_with_auto_detect() -> Result<(String, DatabaseConnec
         .default(default_database)
         .allow_empty(true)
         .interact()?;
-    let database = if database.is_empty() { None } else { Some(database) };
+    let database = if database.is_empty() {
+        None
+    } else {
+        Some(database)
+    };
 
     // Input port number
     let port_str: String = Input::with_theme(&theme)
