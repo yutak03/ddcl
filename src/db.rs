@@ -99,9 +99,10 @@ impl DatabaseConnector {
         // Add username
         cmd.arg("-u").arg(&connection.user);
 
-        // Add password (if specified) - use environment variable instead of command line
+        // Add password (if specified)
         if let Some(password) = &connection.password {
-            cmd.env("MYSQL_PWD", password);
+            // Use -p flag with password directly (no space between -p and password)
+            cmd.arg(format!("-p{}", password));
         }
 
         // Add additional options if available
