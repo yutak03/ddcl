@@ -1,4 +1,4 @@
-# Docker データベースコンテナ接続ツール
+# Docker Database Container Login Tool
 
 Docker で実行されているデータベースコンテナに簡単に接続するための CLI ツールです。
 
