@@ -1,6 +1,6 @@
 [package]
 name = "docker-db-container-login"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["yutak <yutak03.dev@gmail.com>"]
 edition = "2024"
 description = "A CLI tool for easily connecting to Docker database containers"
@@ -10,13 +10,13 @@ name = "dbcli"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "=4.5.38", features = ["derive"] }
+clap = { version = "=4.5.39", features = ["derive"] }
 serde = { version = "=1.0.219", features = ["derive"] }
-serde_yaml = "=0.9.33"
+serde_yaml = "=0.9.34"
 anyhow = "=1.0.98"
 thiserror = "=2.0.12"
 directories = "=6.0.0"
-tokio = { version = "=1.45.0", features = ["full", "process"] }
+tokio = { version = "=1.45.1", features = ["full", "process"] }
 log = "=0.4.27"
 env_logger = "=0.11.8"
 tempfile = "=3.20.0"
