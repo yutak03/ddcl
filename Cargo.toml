@@ -10,11 +10,11 @@ name = "dbcli"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "=4.5.44", features = ["derive"] }
+clap = { version = "=4.5.45", features = ["derive"] }
 serde = { version = "=1.0.219", features = ["derive"] }
 serde_yaml = "=0.9.34"
 anyhow = "=1.0.99"
-thiserror = "=2.0.14"
+thiserror = "=2.0.15"
 directories = "=6.0.0"
 tokio = { version = "=1.47.1", features = ["full", "process"] }
 log = "=0.4.27"
