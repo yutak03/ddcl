@@ -201,7 +201,7 @@ pub async fn get_connection_with_auto_detect() -> Result<(String, DatabaseConnec
         println!("Password detected from environment variable");
         let use_default = Select::with_theme(&theme)
             .with_prompt("Use password from environment variable?")
-            .items(&["Yes", "No (enter new password)"])
+            .items(["Yes", "No (enter new password)"])
             .default(0)
             .interact()?;
 
