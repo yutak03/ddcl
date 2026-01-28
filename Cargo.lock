@@ -176,9 +176,9 @@ dependencies = [
 
 [[package]]
 name = "btoi"
-version = "0.5.0"
+version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b5ab9db53bcda568284df0fd39f6eac24ad6f7ba7ff1168b9e76eba6576b976"
+checksum = "9dd6407f73a9b8b6162d8a2ef999fe6afd7cc15902ebf42c5cd296addf17e0ad"
 dependencies = [
  "num-traits",
 ]
@@ -1176,9 +1176,9 @@ checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "lru"
-version = "0.16.3"
+version = "0.12.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1dc47f592c06f33f8e3aea9591776ec7c9f9e4124778ff8a3c3b87159f7e593"
+checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
 
 [[package]]
 name = "macro_magic"
@@ -1365,9 +1365,9 @@ dependencies = [
 
 [[package]]
 name = "mysql"
-version = "27.0.0"
+version = "26.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "090068bc0a24762663338da78414148333d1ee246a7293c10a517ddf1548b291"
+checksum = "ce2510a735f601bab18202b07ea0a197bd1d130d3a5ce2edf4577d225f0c3ee4"
 dependencies = [
  "bufstream",
  "bytes",
@@ -1381,7 +1381,7 @@ dependencies = [
  "named_pipe",
  "pem",
  "percent-encoding",
- "socket2 0.6.1",
+ "socket2 0.5.8",
  "twox-hash",
  "url",
 ]
@@ -1406,9 +1406,9 @@ dependencies = [
 
 [[package]]
 name = "mysql_common"
-version = "0.36.2"
+version = "0.35.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20e7f6a15265801679ddf1ddb38fd74b4555a677a78378d4561fbe5f0b1d4d72"
+checksum = "fbb9f371618ce723f095c61fbcdc36e8936956d2b62832f9c7648689b338e052"
 dependencies = [
  "base64",
  "bitflags",
