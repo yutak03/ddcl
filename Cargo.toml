@@ -10,7 +10,7 @@ name = "dbcli"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "=4.5.60", features = ["derive"] }
+clap = { version = "=4.6.0", features = ["derive"] }
 serde = { version = "=1.0.228", features = ["derive"] }
 serde_yaml = "=0.9.34"
 anyhow = "=1.0.102"
@@ -18,13 +18,13 @@ thiserror = "=2.0.18"
 directories = "=6.0.0"
 tokio = { version = "=1.50.0", features = ["full", "process"] }
 log = "=0.4.29"
-env_logger = "=0.11.9"
-tempfile = "=3.26.0"
+env_logger = "=0.11.10"
+tempfile = "=3.27.0"
 dialoguer = "=0.12.0"
 regex = "=1.12.3"
 shell-escape = "=0.1.5"
 
 # Database drivers
 mysql = "=27.0.0"
-postgres = { version = "=0.19.12", features = ["with-chrono-0_4"] }
-mongodb = "=3.5.1"
+postgres = { version = "=0.19.13", features = ["with-chrono-0_4"] }
+mongodb = "=3.5.2"
