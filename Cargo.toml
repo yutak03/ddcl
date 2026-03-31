@@ -6,7 +6,7 @@ edition = "2024"
 description = "A CLI tool for easily connecting to Docker database containers"
 
 [[bin]]
-name = "dbcli"
+name = "ddcl"
 path = "src/main.rs"
 
 [dependencies]

@@ -7,7 +7,7 @@ use crate::config::{DatabaseConnection, DatabaseType};
 /// CLI tool for easily connecting to Docker database containers
 #[derive(Debug, Parser)]
 #[command(
-    name = "dbcli",
+    name = "ddcl",
     about = "A tool to easily connect to Docker database containers",
     version
 )]

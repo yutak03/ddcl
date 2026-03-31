@@ -32,7 +32,7 @@ cargo install --path .
 
 ```bash
 # 自動検出モードで接続設定を追加
-dbcli add --auto-detect
+ddcl add --auto-detect
 ```
 
 #### インタラクティブモード
@@ -41,26 +41,26 @@ dbcli add --auto-detect
 
 ```bash
 # インタラクティブモードで接続設定を追加
-dbcli add --interactive
+ddcl add --interactive
 ```
 
 #### コマンドライン引数での直接指定
 
 ```bash
 # PostgreSQL コンテナの設定を追加
-dbcli add [alias_name] --container [docker_container_name] --db-type postgres --user postgres --password secret --database [database_name]
+ddcl add [alias_name] --container [docker_container_name] --db-type postgres --user postgres --password secret --database [database_name]
 
 # MySQL コンテナの設定を追加
-dbcli add [alias_name] --container [docker_container_name] --db-type mysql --user root --password secret --database [database_name]
+ddcl add [alias_name] --container [docker_container_name] --db-type mysql --user root --password secret --database [database_name]
 
 # MongoDB コンテナの設定を追加
-dbcli add [alias_name] --container [docker_container_name] --db-type mongodb --user mongo --password secret --database [database_name]
+ddcl add [alias_name] --container [docker_container_name] --db-type mongodb --user mongo --password secret --database [database_name]
 ```
 
 ### 設定一覧を表示
 
 ```bash
-dbcli list
+ddcl list
 ```
 
 出力例:
@@ -75,32 +75,32 @@ dbcli list
 
 ```bash
 # PostgreSQLコンテナに接続
-dbcli connect postgres-dev
+ddcl connect postgres-dev
 
 # MySQLコンテナに接続
-dbcli connect mysql-dev
+ddcl connect mysql-dev
 
 # MongoDBコンテナに接続
-dbcli connect mongo-dev
+ddcl connect mongo-dev
 ```
 
 ### 直接パラメータを指定して接続
 
 ```bash
 # PostgreSQLコンテナに直接接続
-dbcli connect --container postgres_container --db-type postgres --user postgres --password secret --database mydb
+ddcl connect --container postgres_container --db-type postgres --user postgres --password secret --database mydb
 
 # MySQLコンテナに直接接続
-dbcli connect --container mysql_container --db-type mysql --user root --password secret --database mydb
+ddcl connect --container mysql_container --db-type mysql --user root --password secret --database mydb
 
 # MongoDBコンテナに直接接続
-dbcli connect --container mongo_container --db-type mongodb --user mongo --password secret --database admin
+ddcl connect --container mongo_container --db-type mongodb --user mongo --password secret --database admin
 ```
 
 ### 設定の削除
 
 ```bash
-dbcli remove postgres-dev
+ddcl remove postgres-dev
 ```
 
 ## 設定ファイル
