@@ -27,4 +27,4 @@ shell-escape = "=0.1.5"
 # Database drivers
 mysql = "=27.0.0"
 postgres = { version = "=0.19.13", features = ["with-chrono-0_4"] }
-mongodb = "=3.5.2"
+mongodb = "=3.6.0"
